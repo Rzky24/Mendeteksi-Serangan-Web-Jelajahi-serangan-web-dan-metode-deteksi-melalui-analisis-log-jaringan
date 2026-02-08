@@ -1,1 +1,141 @@
 # Mendeteksi-Serangan-Web-Jelajahi-serangan-web-dan-metode-deteksi-melalui-analisis-log-jaringan
+
+# Pendahuluan
+Serangan web adalah salah satu cara paling umum yang digunakan penyerang untuk masuk ke sistem target. Situs web dan aplikasi web yang menghadap publik sering kali berada di depan basis data dan infrastruktur lainnya, yang merupakan target menarik bagi penyerang. Di ruangan ini, Anda akan mempelajari cara mengidentifikasi ancaman ini menggunakan metode deteksi praktis dan alat standar industri
+
+Tujuan
+Mempelajari jenis-jenis serangan umum sisi klien dan sisi server
+Memahami manfaat dan keterbatasan deteksi berbasis log
+Jelajahi metode deteksi berbasis lalu lintas jaringan.
+Pahami bagaimana dan mengapa Web Application Firewall digunakan.
+Berlatihlah mengidentifikasi serangan web umum menggunakan metode yang telah dibahas.
+Prasyarat
+Serangan web mencakup berbagai macam teknik. Di ruangan ini, Anda akan mempelajari gambaran singkat beberapa serangan umum sebelum mempelajari cara mendeteksinya. Untuk mendapatkan hasil maksimal dari latihan ini, Anda harus memiliki pemahaman dasar tentang jenis-jenis serangan ini dan sedikit familiaritas dengan menganalisis log dan tangkapan paket
+
+OWASP  Top 10 mencakup sepuluh risiko keamanan web paling kritis.
+Baca Pengantar Lengkap  Analisis Log untuk gambaran umum tentang log dan indikator yang berguna.
+Wireshark: The Basics  memberikan pengantar yang bagus untuk analisis tangkapan paket.
+
+# Serangan Sisi Klien Client-Side Attacks
+Peramban web diserang oleh XSS, tag <script>, dan rudal dengan peringatan yang muncul
+
+Serangan sisi klien mengandalkan penyalahgunaan kelemahan dalam perilaku pengguna atau pada perangkat pengguna. Serangan ini sering mengeksploitasi kerentanan di peramban atau memperdaya pengguna untuk melakukan tindakan yang tidak aman guna mendapatkan akses ke akun dan mencuri informasi sensitif. Data berharga dapat disimpan di perangkat pengguna, sehingga serangan sisi klien yang berhasil dapat mengakibatkan kehilangan data. Dengan meningkatnya permintaan akan aplikasi web yang dinamis dan serbaguna, perusahaan mengintegrasikan lebih banyak plugin pihak ketiga, memperluas permukaan serangan di peramban, dan membuka lebih banyak peluang untuk serangan sisi klien
+
+Bayangkan Anda sedang menjelajahi situs e-commerce favorit Anda dan mengklik gambar produk yang Anda minati. Tanpa Anda sadari, seorang penyerang telah menyembunyikan jendela tersembunyi yang berbahaya di dalam halaman tersebut yang memuat situs lain di latar belakang. Situs tersembunyi ini menjalankan kode berbahaya yang mencuri cookie sesi login Anda. Tidak ada yang tampak aneh, tetapi sekarang penyerang dapat menyamar sebagai Anda dan mengakses akun Anda!
+
+ Keterbatasan SOC
+Alat yang tersedia bagi seorang analis, seperti log sisi server dan tangkapan lalu lintas jaringan, menawarkan sedikit atau tidak ada visibilitas tentang apa yang terjadi di dalam browser pengguna. Seperti yang dibahas di atas, serangan sisi klien terjadi pada sistem pengguna, yang berarti mereka dapat mengeksekusi kode berbahaya, mencuri informasi, atau memanipulasi lingkungan tanpa menghasilkan permintaan HTTP atau lalu lintas jaringan yang mencurigakan yang dapat dilihat oleh SOC .  Akibatnya, mendeteksi  serangan ini dari perspektif SOC seringkali sulit atau bahkan tidak mungkin tanpa kontrol keamanan sisi browser tambahan atau pemantauan titik akhir
+
+<img width="1220" height="320" alt="image" src="https://github.com/user-attachments/assets/3596e0bc-ca76-4a40-93e4-4d83fc1a16ab" />
+
+Serangan Sisi Klien Umum
+Cross-Site Scripting  ( XSS ) adalah  serangan sisi klien yang paling umum , di mana skrip berbahaya dijalankan di situs web tepercaya dan dieksekusi di browser pengguna. Jika situs web Anda memiliki kotak komentar yang tidak memfilter input, penyerang dapat memposting komentar seperti: Hello <script>alert('You have been hacked');</script>. Saat pengunjung memuat halaman, skrip berjalan di dalam browser mereka, dan pop-up muncul. Dalam serangan nyata, alih-alih pop-up yang tidak berbahaya, penyerang dapat mencuri cookie atau data sesi
+Cross-Site Request Forgery ( CSRF ): Browser diperdaya untuk mengirimkan permintaan tidak sah atas nama pengguna tepercaya.
+Clickjacking : Penyerang menempatkan elemen tak terlihat di atas konten yang sah, membuat pengguna percaya bahwa mereka berinteraksi dengan sesuatu yang aman.
+Jawab pertanyaan di bawah ini
+Jenis serangan apa yang bergantung pada eksploitasi perilaku atau perangkat pengguna?
+
+jawaban : Client-Side
+
+
+Apa serangan sisi klien yang paling umum?
+
+jawaban : XSS
+
+# Serangan Sisi Server
+<img width="401" height="146" alt="image" src="https://github.com/user-attachments/assets/97c7b91d-1912-4a03-bc61-64e670b606a2" />
+
+
+Serangan sisi server  mengandalkan eksploitasi kerentanan dalam server web, kode aplikasi, atau backend yang mendukung situs web atau aplikasi web. Sementara serangan sisi klien memanipulasi interaksi pengguna dengan situs, serangan sisi server berfokus pada pemanfaatan sistem itu sendiri. Dengan mengeksploitasi kelemahan dan kerentanan, logika server, kesalahan konfigurasi, atau penanganan input, penyerang dapat memperoleh akses, mencuri informasi, dan menyebabkan kerusakan pada layanan yang sedang berjalan.
+
+Situs web favorit Anda kemungkinan besar dipenuhi dengan formulir yang memungkinkan input pengguna. Ini bisa berupa formulir login yang menerima nama pengguna atau kata sandi, atau formulir pencarian untuk mencari pesanan sebelumnya atau produk tertentu. Bayangkan jika situs web tersebut salah menangani input dari salah satu formulir ini. Kerentanan ini dapat memungkinkan penyerang untuk mengakses informasi pelanggan atau keuangan sensitif yang tersimpan di basis data backend.
+
+# Menangkap Serangan Sisi Server
+Salah satu keuntungan bagi pihak bertahan ketika menghadapi serangan sisi server adalah serangan tersebut meninggalkan jejak bukti, jika Anda tahu di mana mencarinya. Setiap permintaan web yang dikirim ke aplikasi diproses oleh server dan dicatat dalam log atau sistem pemantauan lainnya. Permintaan ini juga berjalan melalui jaringan, yang berarti lalu lintas jaringan dapat mengungkapkan perilaku mencurigakan. Dalam tugas-tugas selanjutnya, kita akan mengidentifikasi serangan sisi server baik dalam log maupun lalu lintas jaringan
+
+<img width="1220" height="320" alt="image" src="https://github.com/user-attachments/assets/094515fa-b7cb-43f0-90c1-a08173a019d7" />
+
+Serangan Sisi Server Umum
+Serangan brute-force terjadi ketika penyerang berulang kali mencoba berbagai nama pengguna atau kata sandi dalam upaya untuk mendapatkan akses tidak sah ke suatu akun. Alat otomatis sering digunakan untuk mengirim permintaan ini dengan cepat, memungkinkan penyerang untuk menelusuri daftar kredensial dan kata sandi umum yang panjang.  T-Mobile  menghadapi pelanggaran data pada tahun 2021 yang berasal dari serangan brute-force, yang memungkinkan penyerang mengakses informasi identitas pribadi ( PII ) lebih dari 50 juta pelanggan T-Mobile
+SQL  Injection (SQLi) mengandalkan serangan terhadap basis data yang berada di balik sebuah situs web dan terjadi ketika aplikasi membangun kueri melalui penggabungan string alih-alih menggunakan kueri berparameter, sehingga memungkinkan penyerang untuk mengubahSQLdan mengakses atau memanipulasi data. Pada tahun 2023,SQLipadaMOVEit, perangkat lunak transfer file, dieksploitasi, yang memengaruhi lebih dari 2.700 organisasi, termasuk lembaga pemerintah AS, BBC, dan British Airways.
+Command Injection adalahserangan umumyang terjadi ketika sebuah situs web menerima input pengguna dan meneruskannya ke sistem tanpa memeriksanya terlebih dahulu. Penyerang dapat menyusupkan perintah, sehingga server dapat menjalankannya dengan izin yang sama seperti aplikasi.
+Jawab pertanyaan di bawah ini
+Jenis serangan apa yang mengandalkan eksploitasi kerentanan dalam server web?
+
+Server-Side
+
+
+Serangan sisi server mana yang memungkinkan penyerang menyalahgunakan formulir untuk mengambil isi basis data?
+
+SQLi
+
+# Deteksi Berbasis Log
+Log dapat menjadi alat yang berharga untuk mendeteksi serangan web. Setiap permintaan yang dikirim ke server web dapat meninggalkan bukti dalam log akses dan log kesalahan. Para pembela dapat menemukan pola yang mengungkapkan pemindaian, upaya eksploitasi, atau serangan lain dengan meninjau entri log. Dalam tugas ini, Anda akan meninjau dasar-dasar format log akses dan melihat bagaimana berbagai serangan terjadi dalam log akses server web, kemudian mempraktikkan keterampilan Anda dalam skenario urutan serangan nyata.
+
+Format Log Akses
+
+Di bawah ini adalah contoh entri log akses. Tergantung pada konteksnya, setiap kolom dapat menunjukkan lalu lintas yang aman atau berbahaya. Meskipun tidak semua log akses mengikuti format persis ini, umumnya log akses mencakup informasi berikut:
+
+Bidang Log	Contoh Indikator
+1. Alamat IP Klien	Berbahaya yang diketahui atau di luar jangkauan geografis yang diharapkan
+2. Cap Waktu dan Halaman yang Diminta	Permintaan yang diajukan pada jam-jam yang tidak lazim atau diulang dalam waktu singkat.
+3. Kode Status	Respons berulang 404yang menunjukkan halaman tidak dapat ditemukan
+4. Ukuran Respons	Jauh lebih kecil atau lebih besar dari ukuran respons normal
+5. Perujuk	Mengarahkan ke halaman yang tidak sesuai dengan navigasi situs normal.
+6. Agen Pengguna	Versi browser usang atau alat serangan umum (misalnya sqlmap, wpscan)
+
+<img width="1269" height="185" alt="image" src="https://github.com/user-attachments/assets/084a1be9-9850-4a56-afc0-831ade942aba" />
+
+Serangan dalam Log
+Selanjutnya, kita akan memeriksa contoh urutan serangan yang dipadatkan. Urutan entri log hanya akan menampilkan permintaan penyerang; namun, dalam skenario dunia nyata, lalu lintas yang tidak berbahaya akan membentuk sebagian besar entri log, sehingga penting untuk mengembangkan kemampuan pengamatan yang tajam untuk menemukan pola berbahaya di tengah aktivitas normal. Penting juga untuk dicatat bahwa dalam contoh di bawah ini, string kueri dalam serangan SQLi dicatat, sehingga Anda dapat melihat muatan SQLi lengkap
+
+Penyerang menguji potensi direktori dan formulir untuk dieksploitasi dengan menggunakan metode directory fuzz. 200Kode respons menunjukkan temuan yang valid bagi penyerang.
+Selanjutnya, penyerang mengeksploitasi login.phpformulir yang ditemukan dengan serangan brute-force. Perhatikan POSTpermintaan berulang yang terjadi dengan cepat. Permintaan terakhir POSTmemiliki kode respons yang berbeda, 302 Found, yang dalam hal ini menandakan upaya login yang berhasil. Halaman kemudian dialihkan ke halaman akun pengguna di /account.
+Setelah penyerang mendapatkan akses ke akun, mereka mencoba dua payload SQLi, ' OR '1'='1dan 1' OR 'a'='a, pada /searchformulir tersebut. Jika aplikasi membangun kueri SQL secara dinamis alih-alih menggunakan kueri berparameter, penyerang dapat melakukan dump basis data.
+
+<img width="1390" height="685" alt="image" src="https://github.com/user-attachments/assets/e67b73fc-3c91-4ef3-a0d7-fdd9d8e6ca4e" />
+Keterbatasan Log
+Meskipun log akses berguna, log tersebut tidak selalu mencatat seluruh isi permintaan, terutama isi  POST atau  GET permintaan. Misalnya, upaya login dapat muncul di log akses sebagai:
+
+10.10.10.100 [12/Aug/2025:14:32:10] "POST /login HTTP/1.1" 200 532 "/home.html" "Mozilla/5.0"
+
+Contoh log di atas menunjukkan metode permintaan, halaman yang diminta, dan kode status, tetapi bukan kredensial atau muatan sebenarnya yang dikirimkan dalam permintaan. Yang penting, log akses tidak mencatat POSTdata isi sebenarnya, seperti kredensial yang dikirimkan, sehingga penyelidik hanya dapat melihat bahwa permintaan telah terjadi.  GETLog dapat mencatat jalur lengkap dan string kueri, tetapi beberapa format log tidak akan menyertakannya sama sekali. Ini sepenuhnya bergantung pada perangkat lunak server yang digunakan dan konfigurasi pencatatan log.
+
+Investigasi
+TryBankMe, sebuah platform perbankan online kecil, telah mengalami pelanggaran keamanan. Penyerang masuk dan membocorkan data pelanggan yang sensitif di forum darknet. Manajemen meyakini bahwa intrusi dimulai melalui situs web publik perusahaan, dan terserah Anda untuk mengungkap bagaimana tepatnya hal itu terjadi
+
+Mulailah dengan membuka access.logfile di desktop. 
+
+Misi Anda adalah menganalisis log dan menelusuri kembali langkah-langkah penyerang untuk mengungkap bagaimana pelanggaran tersebut terjadi. Semoga berhasil!
+
+Jawab pertanyaan di bawah ini
+Apa User-Agent penyerang saat melakukan fuzzing direktori?
+
+buka contoh access log - lihat detail permintaan GET BERULANG KE BERBAGAI ENDPOINT
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/5c367389-83c7-4d08-96c5-d7012be5924e" />
+
+
+
+jawaban : FFUF v2.1.0
+
+
+Apa nama halaman tempat penyerang melakukan serangan brute-force?
+cara sama seperti yang di atas tinggal mencari : /login.php
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/94ea53b2-dbbe-48dc-be7b-0bf36677569e" />
+
+jawaban : /login.php
+
+
+Apa muatan SQLi lengkap yang telah didekode yang digunakan penyerang pada /changeusername.phpformulir tersebut?
+kita harus menyalin sqli yang di codekan di cyber cheff ini yang harus di code kan :192.168.1.10 - - [20/Aug/2025:07:38:20 +0000] "GET /account/changeusername.php?q=%25%27+OR+%271%27%3D%271 HTTP/1.1" 200 289 "sqlmap/stable" 
+
+lalu kita buka cyber cheff pilih url decode : <img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/d4da5724-2678-4849-9155-f493df709196" />
+
+
+
+<img width="1335" height="669" alt="image" src="https://github.com/user-attachments/assets/5dd3bd3f-73c0-4d6b-bdc4-9b43e47f3789" />
+ 
+
+
+jawaban : %' OR '1'='1
+
