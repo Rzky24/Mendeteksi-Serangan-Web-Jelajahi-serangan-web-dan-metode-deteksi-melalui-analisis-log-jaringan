@@ -139,3 +139,73 @@ lalu kita buka cyber cheff pilih url decode : <img width="1366" height="768" alt
 
 jawaban : %' OR '1'='1
 
+
+eteksi Berbasis Jaringan
+Analisis lalu lintas jaringan memungkinkan analis untuk memeriksa data mentah yang dipertukarkan antara klien dan server. Dengan menangkap dan memeriksa paket, analis dapat mengamati perilaku serangan pada tingkat yang lebih detail, termasuk protokol transport yang mendasarinya dan data aplikasi itu sendiri. Tangkapan jaringan lebih rinci daripada log server, mengungkapkan data di balik setiap permintaan dan respons. Ini dapat mencakup header HTTP lengkap , isi POST, cookie, dan file yang diunggah dan diunduh, misalnya.
+
+Protokol yang mengandalkan enkripsi, seperti HTTPS dan SSH , membatasi apa yang dapat dilihat dalam muatan paket tanpa akses ke kunci dekripsi. Untuk contoh kita, kita akan fokus secara khusus pada lalu lintas HTTP dalam tugas ini.
+
+Serangan pada Lalu Lintas Jaringan
+Mari kita mulai dengan meninjau urutan serangan dari tugas sebelumnya dan membandingkan tampilannya di Wireshark. Tersedia banyak filter berbeda untuk menyoroti bidang yang Anda minati. Di bawah ini, kami telah memfilter alamat IP tujuan 10.10.20.200dan User-Agent menggunakan http.user_agentfilter tersebut.
+
+Ingat kembali urutan kejadiannya.
+
+Pencarian direktori secara acak untuk menemukan direktori atau formulir yang valid.
+Upaya serangan brute-force dengan paket 13 sebagai login yang berhasil.
+Upaya injeksi SQL
+
+<img width="1336" height="448" alt="image" src="https://github.com/user-attachments/assets/361328b0-353b-45fe-9b75-b3476d8a97f1" />
+Setelah kita memeriksa urutan kejadian, mari kita periksa detail paket untuk mengumpulkan bukti lebih lanjut dari serangan tersebut. Pertama, melihat upaya brute force. Jika Anda ingat, log menunjukkan POSTpermintaan berulang ke login.phpformulir. Sekarang kita dapat melihat nama pengguna dan kata sandi sebenarnya yang digunakan penyerang untuk mencoba masuk. Memeriksa permintaan terakhir ke formulir (paket 13), yang kita tahu berhasil, kita dapat melihat bahwa penyerang menemukan kata sandi yang valid password123. Bukan kata sandi yang sangat aman, terutama untuk akun admin!
+
+<img width="1000" height="446" alt="image" src="https://github.com/user-attachments/assets/601c95d5-2029-43d4-a6b1-d3dcc028b4fe" />
+
+Selanjutnya, mari kita lihat upaya SQLi pertama dari serangan tersebut secara lebih detail. Memeriksa paket HTTP memungkinkan kita untuk melihat dengan jelas muatan (payload) yang digunakan oleh penyerang dan hasil serangannya. Dalam kasus ini, ' OR '1'='1muatan tersebut memungkinkan tabel Pengguna (Users) untuk diekspos, menampilkan Nama Depan dan Nama Belakang dalam teks biasa untuk penyerang! Perlu dicatat bahwa lalu lintas protokol MySQL juga dapat dianalisis menggunakan Wireshark dan menunjukkan muatan serta hasil yang dikembalikan.
+
+<img width="1009" height="520" alt="image" src="https://github.com/user-attachments/assets/6158a30c-328f-4cf4-9915-df70c2649f36" />
+
+Investigasi Berlanjut
+Meskipun analisis log Anda menemukan beberapa bukti serangan, Anda tidak dapat melihat pengguna mana yang diretas atau data apa yang sebenarnya dicuri. Untungnya, kami memiliki tangkapan lalu lintas jaringan saat serangan terjadi. Telusuri file traffic.pcapdi desktop pengguna untuk melanjutkan investigasi Anda. Saat Anda menelusuri lalu lintas jaringan, ingatlah urutan serangan dari investigasi Anda sebelumnya. Semoga berhasil!
+
+Tips: 
+
+Gunakan httpfilter di Wireshark untuk hanya melihat lalu lintas HTTP
+
+Anda juga dapat mengklik kanan pada paket mana pun → ikuti Aliran HTTP untuk merekonstruksi permintaan dan respons lengkap antara klien dan server.
+
+Jawab pertanyaan di bawah ini
+Kata sandi apa yang berhasil diidentifikasi oleh penyerang dalam serangan brute-force?
+
+Investigasi Berlanjut
+Meskipun analisis log Anda menemukan beberapa bukti serangan, Anda tidak dapat melihat pengguna mana yang diretas atau data apa yang sebenarnya dicuri. Untungnya, kami memiliki tangkapan lalu lintas jaringan saat serangan terjadi. Telusuri file traffic.pcapdi desktop pengguna untuk melanjutkan investigasi Anda. Saat Anda menelusuri lalu lintas jaringan, ingatlah urutan serangan dari investigasi Anda sebelumnya. Semoga berhasil!
+
+Tips: 
+
+Gunakan httpfilter di Wireshark untuk hanya melihat lalu lintas HTTP
+
+Anda juga dapat mengklik kanan pada paket mana pun → ikuti Aliran HTTP untuk merekonstruksi permintaan dan respons lengkap antara klien dan server
+buka file : pcap traffick di tryhackme  
+Anda dapat menggunakan filter Wireshark http.response.code == 302 untuk mencari login yang berhasil. 
+gunakan pencarian wire shark :  http.response.code == 302  selanjutnya folow http stream - username=admin&password=astrongpassword123HTTP/1.1 302 Found
+
+<img width="1346" height="658" alt="image" src="https://github.com/user-attachments/assets/f86c5cc0-e190-4ce2-8829-8433b1da7283" />
+
+ 
+jawaban : astrongpassword123
+
+
+Apa flag yang ditemukan penyerang di dalam database menggunakan SQLi?
+
+
+buka file pcap traffick wireshark
+klik pencarian : http kita cari sqli di kotak keterangan - cari 192.168.1.9  get account changeusername di kotak wireshark -
+copy file as csv - 
+"440","2025-08-20 07:38:21.006112","192.168.1.10","192.168.1.9","HTTP","572","GET /account/changeusername.php?q=%25%27+OR+%271%27%3D%271 HTTP/1.1 "
+ selanjutnya follow HTTP STRING - 
+ LIHAT DETAIL ISI BAGIAN PALING BAWAH -  THM{dumped_the_db}
+
+
+<img width="1346" height="674" alt="image" src="https://github.com/user-attachments/assets/c541d1b7-2e93-41ae-be68-bcf68520b6e4" />
+
+
+JAWABAN : THM{dumped_the_db}
+
