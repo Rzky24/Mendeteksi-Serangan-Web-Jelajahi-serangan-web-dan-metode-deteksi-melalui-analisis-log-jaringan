@@ -209,3 +209,56 @@ copy file as csv -
 
 JAWABAN : THM{dumped_the_db}
 
+# Firewall Aplikasi Web
+
+<img width="1030" height="330" alt="image" src="https://github.com/user-attachments/assets/35dc9014-a0aa-4670-81f1-7c132f891c01" />
+
+Firewall Aplikasi Web (WAF) seringkali menjadi garis pertahanan pertama untuk situs web dan aplikasi web. Sejauh ini di ruangan ini, kita telah fokus pada pendeteksian dan analisis aktivitas berbahaya. Sekarang, kita akan mengalihkan fokus kita ke salah satu alat mitigasi paling efektif yang tersedia. WAF bertindak sebagai penjaga gerbang untuk aplikasi web Anda, memeriksa paket permintaan lengkap, mirip dengan Wireshark tetapi dengan kemampuan untuk mendekripsi lalu lintas TLS dan menyaringnya sebelum mencapai server.
+
+Aturan
+WAF (Web Application Firewall) memeriksa dan memutuskan apakah akan mengizinkan permintaan web atau memblokirnya sepenuhnya berdasarkan aturan yang telah ditentukan. Mari kita periksa beberapa kategori aturan firewall .
+
+Jenis Aturan	Keterangan	Contoh Kasus Penggunaan
+Blokir pola serangan umum.	Memblokir muatan dan indikator berbahaya yang dikenal.	Blokir User-Agent berbahaya:sqlmap
+Tolak sumber berbahaya yang dikenal	Menggunakan reputasi IP, intelijen ancaman, atau pemblokiran geografis untuk menghentikan lalu lintas yang berisiko.	Blokir IP dari kampanye botnet terbaru.
+Aturan yang dibuat khusus	Disesuaikan dengan kebutuhan aplikasi spesifik Anda.	Hanya izinkan permintaan GET/POST ke/login
+Pembatasan laju dan pencegahan penyalahgunaan	Membatasi frekuensi permintaan untuk mencegah penyalahgunaan	Batasi upaya login hingga 5 kali per menit per IP.
+Bayangkan Anda melihat GETpermintaan berulang ke /changeusernamedengan string User-Agent sqlmap/1.9. SQLMap adalah alat otomatis untuk mendeteksi dan mengeksploitasi kerentanan injeksi SQL. Setelah meninjau lalu lintas jaringan, Anda melihat bahwa permintaan tersebut menyertakan payload SQLi.
+
+Anda dapat membuat aturan untuk memblokir pencocokan string User-Agent apa pun sqlmap:
+
+If User-Agent contains "sqlmap"
+then BLOCK
+
+Ini adalah contoh sederhana dan WAF modern akan mendeteksi dan memblokir User-Agent mencurigakan yang dikenal secara otomatis. Namun, aturan seperti ini dapat dibuat khusus untuk menyesuaikan aplikasi atau skenario ancaman spesifik Anda, memungkinkan Anda untuk memblokir aktivitas berbahaya tanpa memengaruhi lalu lintas situs normal.
+
+Mekanisme Tantangan-Respons
+
+WAF tidak selalu perlu memblokir permintaan mencurigakan secara langsung. Misalnya, mereka dapat menantang permintaan dengan CAPTCHA untuk memverifikasi apakah permintaan tersebut berasal dari pengguna sungguhan dan bukan bot. Kemampuan ini sangat berharga mengingat lalu lintas bot berbahaya mencapai 37% dari lalu lintas web global. Pendekatan ini bermanfaat untuk aturan firewall dengan peluang lebih tinggi untuk memblokir lalu lintas web yang sah.
+
+<img width="1250" height="481" alt="image" src="https://github.com/user-attachments/assets/ad2d4150-1603-4237-93eb-0b606619aa5f" />
+
+Mengintegrasikan Indikator yang Diketahui dan Intelijen Ancaman
+Banyak solusi WAF modern menyertakan kumpulan aturan bawaan yang dirancang untuk mengurangi risiko keamanan OWASP Top 10 , beberapa di antaranya telah kami bahas sebelumnya. WAF juga memanfaatkan umpan intelijen ancaman untuk secara otomatis memblokir permintaan dari alamat IP berbahaya yang dikenal dan User-Agent yang mencurigakan. Mereka menerima pembaruan rutin untuk memerangi ancaman baru dan yang muncul, termasuk dari kelompok APT yang dikenal dan CVE yang baru ditemukan. Lihat bagaimana Cloudflare memelihara daftar IP yang dikurasi, dari sumber seperti botnet, VPN, anonimizer, dan malware, berdasarkan intelijen ancaman global.
+
+Jawablah pertanyaan-pertanyaan di bawah ini.
+Apa yang diperiksa dan disaring oleh WAF?
+
+jawaban : Web Requests
+
+
+Buat aturan firewall khusus untuk memblokir apa pun User-Agentyang cocok dengan "BotTHM".
+
+Anda dapat membuat aturan untuk memblokir pencocokan string User-Agent apa pun sqlmap:
+
+contoh aturan /rules :
+If User-Agent contains "sqlmap" di ghanti menjadi  "BotTHM"
+then BLOCK
+
+dan hasilnya :  IF User-Agent CONTAINS "BotTHM" THEN block
+
+
+
+jawaban : IF User-Agent CONTAINS "BotTHM" THEN block
+
+
