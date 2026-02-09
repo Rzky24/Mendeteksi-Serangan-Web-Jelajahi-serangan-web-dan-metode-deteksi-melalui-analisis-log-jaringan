@@ -261,4 +261,5 @@ dan hasilnya :  IF User-Agent CONTAINS "BotTHM" THEN block
 
 jawaban : IF User-Agent CONTAINS "BotTHM" THEN block
 
-
+Kesimpulan
+Di ruangan ini, Anda telah mempelajari tentang mendeteksi serangan web, dimulai dengan pengulangan tentang serangan umum di sisi klien dan sisi server. Kemudian, Anda membahas analisis berbasis log, diikuti oleh analisis lalu lintas jaringan, untuk memahami indikator umum dan cara mengenalinya sebagai seorang analis. Terakhir, kita menjelajahi Web Application Firewall dan aturan yang digunakan untuk melindungi dari permintaan web berbahaya. Dengan menerapkan korelasi di seluruh sumber ini, Anda dapat melampaui peringatan yang terisolasi dan mengembangkan pendekatan yang lebih komprehensif untuk mendeteksi dan menanggapi serangan web.
